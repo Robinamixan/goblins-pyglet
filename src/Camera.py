@@ -2,7 +2,7 @@ import pyglet
 from pyglet.gl import *
 
 # Zooming constants
-ZOOM_IN_FACTOR = 1.3
+ZOOM_IN_FACTOR = 1.2
 ZOOM_OUT_FACTOR = 1/ZOOM_IN_FACTOR
 
 
@@ -24,7 +24,6 @@ class Camera:
         glOrtho(self.left, self.right, self.bottom, self.top, 1, -1)
 
     def mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        # Move camera
         self.left -= dx * self.zoom_level
         self.right -= dx * self.zoom_level
         self.bottom -= dy * self.zoom_level
@@ -44,7 +43,7 @@ class Camera:
 
     def mouse_scroll(self, x, y, dx, dy, width, height):
         # Get scale factor
-        f = ZOOM_IN_FACTOR if dy > 0 else ZOOM_OUT_FACTOR if dy < 0 else 1
+        f = ZOOM_OUT_FACTOR if dy > 0 else ZOOM_IN_FACTOR if dy < 0 else 1
         # If zoom_level is in the proper range
         if .2 < self.zoom_level * f < 5:
             self.zoom_level *= f
@@ -62,3 +61,6 @@ class Camera:
             self.right = mouse_x_in_world + (1 - mouse_x) * self.zoomed_width
             self.bottom = mouse_y_in_world - mouse_y * self.zoomed_height
             self.top = mouse_y_in_world + (1 - mouse_y) * self.zoomed_height
+
+    def get_zoom_level(self):
+        return round(self.zoom_level, 2)

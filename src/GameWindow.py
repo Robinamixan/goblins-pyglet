@@ -3,6 +3,10 @@ from pyglet.gl import *
 from pyglet.window import key, FPSDisplay
 from src.MobClass import MobClass
 from src.Camera import Camera
+from src.GridField import GridField
+from src.FixedLabel import FixedLabel
+from src.Panel import Panel
+from src.Constants import *
 
 
 class GameWindow(pyglet.window.Window):
@@ -21,26 +25,34 @@ class GameWindow(pyglet.window.Window):
         self.push_handlers(self.keys)
 
         self.fps_display = FPSDisplay(self)
+        self.show_info = False
         self.frame_rate = 1 / 60.0
         pyglet.clock.schedule_interval(self.update, self.frame_rate)
 
-        self.gob = MobClass(x=50, y=50)
+        self.gob = MobClass(x=150, y=150)
+        self.grid = GridField(25, (100, 100), (10, 10), black)
+        self.panel = Panel(self, (self.width - 250, 0), (self.width, self.height), gray)
+
+        self.zoom_level = FixedLabel(self, str(self.camera.get_zoom_level()), (10, 35), color=black, fixed_bottom=False)
 
     def update(self, dt):
         self.gob.update(dt)
         self.camera.update()
+        self.zoom_level.update(str(self.camera.get_zoom_level()))
 
     def on_key_press(self, KEY, MOD):
         if KEY == key.ESCAPE:
             self.close()
         elif KEY == key.W:
-            self.camera.set_move_vertical(5)
-        elif KEY == key.S:
             self.camera.set_move_vertical(-5)
+        elif KEY == key.S:
+            self.camera.set_move_vertical(5)
         elif KEY == key.A:
-            self.camera.set_move_horizontal(-5)
-        elif KEY == key.D:
             self.camera.set_move_horizontal(5)
+        elif KEY == key.D:
+            self.camera.set_move_horizontal(-5)
+        elif KEY == key.F3:
+            self.show_info = not self.show_info
 
     def on_key_release(self, KEY, MOD):
         if KEY in (key.W, key.S):
@@ -60,20 +72,15 @@ class GameWindow(pyglet.window.Window):
     def on_draw(self):
         self.init_2d()
 
-        # Set orthographic projection matrix
         self.camera.draw()
 
+        self.grid.draw()
         self.gob.draw()
-        main_batch = pyglet.graphics.Batch()
-        main_batch.add(4, gl.GL_LINES, None,
-                       ('v2i', (0, -500, 0, 500,  # start -> end
-                                -500, 0, 500, 0)),  # start -> end
 
-                       ('c3B', (0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0))
-                       )
-        main_batch.draw()
-        self.fps_display.draw()
+        self.panel.draw()
+        if self.show_info:
+            self.fps_display.draw()
+            self.zoom_level.draw()
 
         # Remove default modelview matrix
         glPopMatrix()
@@ -109,5 +116,5 @@ class GameWindow(pyglet.window.Window):
         glViewport(0, 0, width, height)
 
     def window_settings(self):
-        self.set_minimum_size(200, 200)
+        # self.set_minimum_size(200, 200)
         self.set_location(400, 200)
