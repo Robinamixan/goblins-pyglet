@@ -59,3 +59,6 @@ class FixedLabel:
 
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glPopMatrix()
+
+    def raw_draw(self):
+        self.label.draw()

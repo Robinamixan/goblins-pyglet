@@ -1,11 +1,11 @@
 import pyglet
 from pyglet.gl import *
 from pyglet.window import key, FPSDisplay
-from src.MobClass import MobClass
-from src.Camera import Camera
-from src.GridField import GridField
-from src.FixedLabel import FixedLabel
-from src.Panel import Panel
+from src.WindowElements.Camera import Camera
+from src.WindowElements.GridField import GridField
+from src.WindowElements.FixedLabel import FixedLabel
+from src.WindowElements.Panel import Panel
+from src.GameController import GameController
 from src.Constants import *
 
 
@@ -20,23 +20,37 @@ class GameWindow(pyglet.window.Window):
         self.window_settings()
 
         self.camera = Camera(width, height)
-
+        self.game_controller = GameController()
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
 
         self.fps_display = FPSDisplay(self)
-        self.show_info = False
-        self.frame_rate = 1 / 60.0
-        pyglet.clock.schedule_interval(self.update, self.frame_rate)
-
-        self.gob = MobClass(x=150, y=150)
+        self.show_info = True
         self.grid = GridField(25, (100, 100), (10, 10), black)
         self.panel = Panel(self, (self.width - 250, 0), (self.width, self.height), gray)
-
         self.zoom_level = FixedLabel(self, str(self.camera.get_zoom_level()), (10, 35), color=black, fixed_bottom=False)
+        self.frame_rate = 1 / 60
+        pyglet.clock.schedule_interval(self.update, self.frame_rate)
+
+        self.pre_loop_game_settings()
+
+    def pre_loop_game_settings(self):
+        for i in range(10):
+            for j in range(10):
+                self.game_controller.create_gob('first_goblin', (i*40 + 50, j*30 + 40))
+        # self.game_controller.create_gob('first_goblin', (150, 150))
+        # self.game_controller.create_gob('second_goblin', (300, 150))
+
+        self.panel.add_label('camera_bottom', (10, 20), '')
+        self.panel.add_label('camera_top', (10, 40), '')
+        self.panel.add_label('camera_right', (10, 60), '')
+        self.panel.add_label('camera_left', (10, 80), '')
+        self.panel.add_label('object_name', (70, 20), '')
+        self.panel.add_label('object_position', (70, 40), '')
 
     def update(self, dt):
-        self.gob.update(dt)
+        self.game_controller.update_mobs(dt)
+        self.panel.update_text(self.camera, self.game_controller.get_focused())
         self.camera.update()
         self.zoom_level.update(str(self.camera.get_zoom_level()))
 
@@ -63,6 +77,16 @@ class GameWindow(pyglet.window.Window):
     def on_resize(self, width, height):
         self.init_gl(width, height)
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        field_x = x + self.camera.left
+        field_y = y + self.camera.bottom
+        if button == 1:
+            self.game_controller.set_focus((field_x, field_y))
+        elif button == 4:
+            focus = self.game_controller.get_focused()
+            if focus:
+                focus.set_vector_x()
+
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.camera.mouse_drag(x, y, dx, dy, buttons, modifiers)
 
@@ -75,7 +99,7 @@ class GameWindow(pyglet.window.Window):
         self.camera.draw()
 
         self.grid.draw()
-        self.gob.draw()
+        self.game_controller.draw_mobs()
 
         self.panel.draw()
         if self.show_info:
