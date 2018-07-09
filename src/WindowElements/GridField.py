@@ -10,13 +10,14 @@ class GridField:
         self.color = color
 
         self.batch = pyglet.graphics.Batch()
+        self.lines = pyglet.graphics.Batch()
 
-        self.batch.add(4, gl.GL_LINES, None,
+        line_color = tuple(self.color) * 4
+        self.lines.add(4, gl.GL_LINES, None,
                        ('v2i', (0, -500, 0, 500,  # start -> end
                                 -500, 0, 500, 0)),  # start -> end
 
-                       ('c3B', (0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0))
+                       ('c4B', line_color)
                        )
 
         color = tuple(self.color) * 8
@@ -43,3 +44,6 @@ class GridField:
 
     def draw(self):
         self.batch.draw()
+        pyglet.gl.glLineWidth(3)
+        self.lines.draw()
+        pyglet.gl.glLineWidth(1)

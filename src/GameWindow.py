@@ -26,7 +26,7 @@ class GameWindow(pyglet.window.Window):
 
         self.fps_display = FPSDisplay(self)
         self.show_info = True
-        self.grid = GridField(25, (100, 100), (10, 10), black)
+        # self.grid = GridField(25, (-500, -500), (40, 40), black)
         self.panel = Panel(self, (self.width - 250, 0), (self.width, self.height), gray)
         self.zoom_level = FixedLabel(self, str(self.camera.get_zoom_level()), (10, 35), color=black, fixed_bottom=False)
         self.frame_rate = 1 / 60
@@ -35,11 +35,11 @@ class GameWindow(pyglet.window.Window):
         self.pre_loop_game_settings()
 
     def pre_loop_game_settings(self):
-        for i in range(10):
-            for j in range(10):
-                self.game_controller.create_gob('first_goblin', (i*40 + 50, j*30 + 40))
-        # self.game_controller.create_gob('first_goblin', (150, 150))
-        # self.game_controller.create_gob('second_goblin', (300, 150))
+        # for i in range(25):
+        #     for j in range(25):
+        #         self.game_controller.create_gob('first_goblin', (i+1, j+1))
+        self.game_controller.create_gob('first_goblin', (3, 3))
+        self.game_controller.create_gob('second_goblin', (5, 10))
 
         self.panel.add_label('camera_bottom', (10, 20), '')
         self.panel.add_label('camera_top', (10, 40), '')
@@ -85,20 +85,22 @@ class GameWindow(pyglet.window.Window):
         elif button == 4:
             focus = self.game_controller.get_focused()
             if focus:
-                focus.set_vector_x()
+                self.game_controller.set_focus_target((field_x, field_y))
 
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.camera.mouse_drag(x, y, dx, dy, buttons, modifiers)
+    # def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+    #     self.camera.mouse_drag(x, y, dx, dy, buttons, modifiers)
 
     def on_mouse_scroll(self, x, y, dx, dy):
         self.camera.mouse_scroll(x, y, dx, dy, self.width, self.height)
 
     def on_draw(self):
+        self.clear()
         self.init_2d()
 
         self.camera.draw()
 
-        self.grid.draw()
+        self.game_controller.draw_map()
+        self.game_controller.draw_focus()
         self.game_controller.draw_mobs()
 
         self.panel.draw()
@@ -141,4 +143,4 @@ class GameWindow(pyglet.window.Window):
 
     def window_settings(self):
         # self.set_minimum_size(200, 200)
-        self.set_location(400, 200)
+        self.set_location(400, 100)

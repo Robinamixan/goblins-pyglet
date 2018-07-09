@@ -1,63 +1,93 @@
 from src.GameElements.Mobs.MobsController import MobsController
+from src.GameElements.Map.Map import Map
+from src.Constants import *
 import copy
+import pyglet
 
 
 class GameController:
     def __init__(self):
         self.mobs_group = []
+        self.mobs_bath = pyglet.graphics.Batch()
         self.static_objects = []
         self.focused = None
         self.mob_controller = MobsController(self)
+        self.map = Map('map', self, (100, 30), map_cell_size, (30, 30))
+        self.map.create_map_from_file('GameElements/Map/test_map_2.txt')
 
     def set_focus(self, mouse_position):
-        focus = None
-        for mob in self.mobs_group:
-            if mob.is_inside(mouse_position):
-                focus = mob
-                break
-        self.focused = focus
+        point = self.get_point_by_coord(mouse_position)
+        map_object = self.map.get_cell_object(point)
+
+        self.focused = map_object
+
+    def draw_focus(self):
+        if self.mob_controller.is_mob(self.focused):
+            self.focused.draw_path()
 
     def get_focused(self):
         return self.focused
 
+    def get_cell(self, point):
+        return self.map.get_cell(point[0], point[1])
+
+    def get_coord_by_point(self, point):
+        return self.map.get_coord_by_point(point[0], point[1])
+
+    def get_point_by_coord(self, coord):
+        return self.map.get_point_by_coord(coord[0], coord[1])
+
+    def add_object_in_cell(self, point, game_object):
+        self.map.add_object_in_cell(point, game_object)
+
+    def remove_object_from_cell(self, point, game_object):
+        self.map.remove_object_from_cell(point, game_object)
+
+    # MOBS FUNCTIONS
     def add_mob(self, mob_object):
         self.mobs_group.append(mob_object)
 
     def remove_mob(self, mob_object):
         self.mobs_group.remove(mob_object)
+        mob_object.delete()
 
         if self.focused == mob_object:
             self.focused = None
 
     def update_mobs(self, dt):
-        group = copy.copy(self.mobs_group)
         for mob in self.mobs_group:
-            if not mob.check_collision(self.get_object_around(mob, 50, group)):
-                mob.update(dt)
-
-    def get_object_around(self, mob_current, radius, group):
-        objects = []
-        point = mob_current.get_position()
-        start_x = point[0] - radius
-        start_y = point[1] - radius
-
-        end_x = point[0] + radius
-        end_y = point[1] + radius
-
-        for mob in group:
-            if mob == mob_current:
-                continue
-            position = mob.get_position()
-            hor = start_x <= position[0] <= end_x
-            vert = start_y <= position[1] <= end_y
-            if hor and vert:
-                objects.append(mob)
-
-        return objects
+            mob.update(dt)
 
     def draw_mobs(self):
-        for mob in self.mobs_group:
-            mob.draw()
+        self.mobs_bath.draw()
 
-    def create_gob(self, name, position):
-        self.add_mob(self.mob_controller.create_gob(name, position))
+    def create_gob(self, name, point):
+        gob = self.mob_controller.create_gob(name, point, self.mobs_bath)
+        self.add_mob(gob)
+        self.add_object_in_cell(point, gob)
+
+    def set_focus_target(self, coord):
+        point = self.get_point_by_coord(coord)
+        if self.mob_controller.is_mob(self.focused):
+            self.focused.set_target(point)
+    # MOBS FUNCTIONS
+
+    # STATIC OBJECTS FUNCTIONS
+    def create_wall(self, point):
+        wall = self.map.create_wall(point)
+        self.add_static_object(wall)
+        self.add_object_in_cell(point, wall)
+
+    def add_static_object(self, static):
+        self.static_objects.append(static)
+
+    def remove_static_object(self, static):
+        self.static_objects.remove(static)
+        static.delete()
+
+        if self.focused == static:
+            self.focused = None
+
+    def draw_map(self):
+        self.map.draw()
+    # STATIC OBJECTS FUNCTIONS
