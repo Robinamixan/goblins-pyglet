@@ -1,4 +1,4 @@
-class CellObject:
+class CellClass:
     passable = True
     contain = []
     x = 0

@@ -41,19 +41,23 @@ class GameWindow(pyglet.window.Window):
         #         self.game_controller.create_gob('first_goblin', (i+1, j+1))
         self.game_controller.create_gob('first_goblin', (3, 3))
         self.game_controller.create_gob('second_goblin', (5, 10))
-        self.game_controller.create_gob('second_goblin', (7, 10))
-        self.game_controller.create_gob('second_goblin', (8, 10))
+
+        for i in range(7, 12):
+            self.game_controller.create_meat((i, 8))
 
         # self.panel.add_label('camera_bottom', (10, 20), '')
         # self.panel.add_label('camera_top', (10, 40), '')
         # self.panel.add_label('camera_right', (10, 60), '')
         # self.panel.add_label('camera_left', (10, 80), '')
-        self.panel.add_label('object_name', (80, 20), '')
-        self.panel.add_label('object_position', (80, 40), '')
-        self.panel.add_label('object_vector', (80, 60), '')
-        self.panel.add_label('object_destination', (80, 80), '')
-        self.panel.add_label('coord_point_x', (10, 20), '')
-        self.panel.add_label('coord_point_y', (10, 40), '')
+        self.panel.add_label('object_name', (90, 20))
+        self.panel.add_label('object_action', (90, 40))
+        self.panel.add_label('object_position', (90, 60))
+        self.panel.add_label('object_destination', (90, 80))
+        self.panel.add_label('object_vector', (90, 100))
+        self.panel.add_label('object_inventory_info', (10, 150))
+        self.panel.add_label('object_inventory_contain', (10, 170))
+        self.panel.add_label('coord_point_x', (10, 20))
+        self.panel.add_label('coord_point_y', (10, 40))
 
     def update(self, dt):
         self.game_controller.update_mobs(dt)
@@ -107,6 +111,7 @@ class GameWindow(pyglet.window.Window):
         self.camera.draw()
 
         self.game_controller.draw_map()
+        self.game_controller.draw_items()
         self.game_controller.draw_focus()
         self.game_controller.draw_mobs()
 

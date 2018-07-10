@@ -18,16 +18,42 @@ class PathCreator:
             if 0 <= neighbor[0] < self.limit_max[0] and 0 <= neighbor[1] < self.limit_max[1]:
                 if neighbor in self.all_nodes:
                     result.append(neighbor)
+                else:
+                    if direct == [1, 0]:
+                        if [1, 1] in directs:
+                            directs.remove([1, 1])
+                        if [1, -1] in directs:
+                            directs.remove([1, -1])
+                    elif direct == [-1, 0]:
+                        if [-1, 1] in directs:
+                            directs.remove([-1, 1])
+                        if [-1, -1] in directs:
+                            directs.remove([-1, -1])
+                    elif direct == [0, 1]:
+                        if [1, 1] in directs:
+                            directs.remove([1, 1])
+                        if [-1, 1] in directs:
+                            directs.remove([-1, 1])
+                    elif direct == [0, -1]:
+                        if [1, -1] in directs:
+                            directs.remove([1, -1])
+                        if [-1, -1]in directs:
+                            directs.remove([-1, -1])
         return result
 
     def create_text(self, list):
         return str(list[0]) + '_' + str(list[1])
 
     def create_path(self, start, end):
-        if end not in self.all_nodes or end == start:
+        if end == start:
             return []
+
         # including mobs in graph
         self.update_nodes(self.map.cells)
+
+        if end not in self.all_nodes :
+            return []
+
         self.fill_graph(start, end)
         current = end
         path = [current]

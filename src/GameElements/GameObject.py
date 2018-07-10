@@ -46,3 +46,11 @@ class GameObject:
 
     def delete(self):
         self.sprite.delete()
+
+    def set_stat(self, stat, value):
+        if hasattr(self, stat):
+            setattr(self, stat, value)
+
+    def get_stat(self, stat):
+        if hasattr(self, stat):
+            return getattr(self, stat)

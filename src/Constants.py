@@ -14,3 +14,4 @@ brow = (175, 55, 0, 255)
 map_cell_size = 25
 wall_image = pyglet.image.load('../resources/wall_1.1.png')
 goblin_image = pyglet.image.load('../resources/goblin_alpha_1.1.png')
+meat_image = pyglet.image.load('../resources/meat_alpha_1.1.png')

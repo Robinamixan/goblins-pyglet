@@ -27,11 +27,11 @@ class Panel:
             ('v2i', [start_x, start_y, start_x, end_y, end_x, end_y, end_x, start_y]),
             ('c4B', self.color * 4))
 
-    def add_label(self, label_id, position, text):
+    def add_label(self, label_id, position):
         current_position = [0, 0]
         current_position[0] = position[0] + self.start_point[0]
         current_position[1] = position[1] + self.start_point[1]
-        label = FixedLabel(self.window, text, current_position, color=black, fixed_bottom=False, font_size=12)
+        label = FixedLabel(self.window, '', current_position, color=black, fixed_bottom=False, font_size=12)
         self.labels[label_id] = label
 
     def update_text(self, camera, game_object, mouse_position):
@@ -52,7 +52,7 @@ class Panel:
                     position = game_object.get_point()
                     text = '[' + str(int(position[0])) + ', ' + str(int(position[1])) + ']'
                     label.update(text)
-                if self.window.game_controller.is_mob(game_object):
+                elif self.window.game_controller.is_mob(game_object):
                     if label_id == 'object_vector':
                         vector = game_object.get_vectors()
                         text = '[' + str(int(vector[0])) + ', ' + str(int(vector[1])) + ']'
@@ -61,6 +61,37 @@ class Panel:
                         destination = game_object.get_destination()
                         text = '[' + str(int(destination[0])) + ', ' + str(int(destination[1])) + ']'
                         label.update(text)
+                    elif label_id == 'object_action':
+                        action = game_object.get_action()
+                        text = action
+                        label.update(text)
+                    elif label_id == 'object_inventory_info':
+                        inventory = game_object.get_inventory_info()
+                        empty = True
+                        for index, item in inventory['items'].items():
+                            if item['object'] is not None:
+                                empty = False
+                                break
+
+                        text = 'size: ' + str(inventory['size'])
+                        if empty:
+                            text += ', empty'
+
+                        label.update('Inventory: ' + text)
+                    elif label_id == 'object_inventory_contain':
+                        inventory = game_object.get_inventory_info()
+                        empty = True
+                        text = ''
+                        for index, item in inventory['items'].items():
+                            if item['object'] is not None:
+                                empty = False
+                                text += item['object'].name + '(' + str(item['amount']) + '), '
+
+                        if not empty:
+                            label.update('Contain: ' + text)
+
+                else:
+                    label.update('')
             else:
                 label.update('')
             if mouse_position:

@@ -1,5 +1,6 @@
 from src.GameElements.Mobs.MobsController import MobsController
-from src.GameElements.Map.Map import Map
+from src.GameElements.Items.ItemsController import ItemController
+from src.GameElements.Map.MapClass import MapClass
 from src.GameElements.Map.PathCreator import PathCreator
 from src.Constants import *
 import copy
@@ -9,11 +10,14 @@ import pyglet
 class GameController:
     def __init__(self):
         self.mobs_group = []
+        self.static_group = []
+        self.items_group = []
         self.mobs_bath = pyglet.graphics.Batch()
-        self.static_objects = []
+        self.items_bath = pyglet.graphics.Batch()
         self.focused = None
         self.mob_controller = MobsController(self)
-        self.map = Map('map', self, (100, 30), map_cell_size, (30, 30))
+        self.item_controller = ItemController(self)
+        self.map = MapClass('map', self, (100, 30), map_cell_size, (30, 30))
         self.map.create_map_from_file('GameElements/Map/templates/test_map_2.txt')
         self.path_creator = PathCreator(self.map)
 
@@ -39,10 +43,10 @@ class GameController:
     def get_point_by_coord(self, coord):
         return self.map.get_point_by_coord(coord[0], coord[1])
 
-    def add_object_in_cell(self, point, game_object):
+    def add_object_in_cell(self, point, game_object, passable=False):
         size = game_object.get_relative_size()
         if size == [1, 1]:
-            self.map.add_object_in_cell(point, game_object)
+            self.map.add_object_in_cell(point, game_object, passable)
         else:
             start_point = copy.copy(point)
             points = []
@@ -51,7 +55,7 @@ class GameController:
                     points.append([i + start_point[0], j + start_point[1]])
 
             for point in points:
-                self.map.add_object_in_cell(point, game_object)
+                self.map.add_object_in_cell(point, game_object, passable)
 
     def remove_object_from_cell(self, point, game_object):
         self.map.remove_object_from_cell(point, game_object)
@@ -66,6 +70,7 @@ class GameController:
     def remove_mob(self, mob_object):
         self.mobs_group.remove(mob_object)
         mob_object.delete()
+        self.remove_object_from_cell(mob_object.get_point(), mob_object)
 
         if self.focused == mob_object:
             self.focused = None
@@ -83,8 +88,8 @@ class GameController:
         self.add_object_in_cell(point, gob)
 
     def set_focus_target(self, coord):
-        point = self.get_point_by_coord(coord)
         if self.mob_controller.is_mob(self.focused):
+            point = self.get_point_by_coord(coord)
             self.focused.set_target(point)
 
     def create_path(self, start, end):
@@ -97,16 +102,41 @@ class GameController:
         self.add_static_object(wall)
         self.add_object_in_cell(point, wall)
 
-    def add_static_object(self, static):
-        self.static_objects.append(static)
+    def add_static_object(self, static_object):
+        self.static_group.append(static_object)
 
-    def remove_static_object(self, static):
-        self.static_objects.remove(static)
-        static.delete()
+    def remove_static_object(self, static_object):
+        self.static_group.remove(static_object)
+        static_object.delete()
+        self.remove_object_from_cell(static_object.get_point(), static_object)
 
-        if self.focused == static:
+        if self.focused == static_object:
             self.focused = None
 
     def draw_map(self):
         self.map.draw()
     # STATIC OBJECTS FUNCTIONS
+
+    # ITEM FUNCTIONS
+    def is_item(self, game_object):
+        return self.item_controller.is_item(game_object)
+
+    def add_item(self, item_object):
+        self.items_group.append(item_object)
+
+    def create_meat(self, point):
+        meat = self.item_controller.create_meat(point, self.items_bath)
+        self.add_item(meat)
+        self.add_object_in_cell(point, meat, passable=True)
+
+    def draw_items(self):
+        self.items_bath.draw()
+
+    def remove_item(self, item_object):
+        self.items_group.remove(item_object)
+        item_object.delete()
+        self.remove_object_from_cell(item_object.get_point(), item_object)
+
+        if self.focused == item_object:
+            self.focused = None
+    # ITEM FUNCTIONS

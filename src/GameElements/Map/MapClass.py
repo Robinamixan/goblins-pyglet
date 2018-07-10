@@ -1,11 +1,11 @@
-from src.GameElements.Map.Cell import CellObject
+from src.GameElements.Map.Cell import CellClass
 from src.GameElements.Static.Wall import Wall
 from src.Constants import *
 from pyglet.gl import gl
 import pyglet
 
 
-class Map:
+class MapClass:
     def __init__(self, title, game_controller, position, cell_size, map_size):
         self.title = title
         self.game_controller = game_controller
@@ -91,7 +91,7 @@ class Map:
             self.cells[i] = [None] * self.map_size[1]
             for j in range(0, self.map_size[1]):
                 point = self.get_coord_by_point(i, j)
-                self.cells[i][j] = CellObject(point[0], point[1], self.cell_size)
+                self.cells[i][j] = CellClass(point[0], point[1], self.cell_size)
 
                 start_x = self.x + self.cell_size * i
                 start_y = self.y + self.cell_size * j

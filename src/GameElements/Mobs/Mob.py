@@ -1,11 +1,12 @@
 from src.GameElements.GameObject import GameObject
+from src.GameElements.Inventory.Inventory import InventoryClass
 from pyglet.gl import gl
 import copy
 from src.Constants import *
 
 
 class MobClass(GameObject):
-    def __init__(self, game_controller, batch, name, point, size, speed, image_path):
+    def __init__(self, game_controller, batch, name, point, size, speed, inventory_size, image_path):
         super().__init__(game_controller, batch, name, point, size, image_path)
         self.vectors = [0, 0]
 
@@ -13,6 +14,8 @@ class MobClass(GameObject):
         self.path = []
 
         self.speed = speed
+        self.action = 'wait'
+        self.inventory = InventoryClass(inventory_size)
 
     # Get destination cell by current destination coord
     def get_destination_cell(self):
@@ -23,6 +26,27 @@ class MobClass(GameObject):
 
     def get_vectors(self):
         return self.vectors
+
+    def get_inventory_info(self):
+        return self.inventory.get_info()
+
+    # Getting current acts of mob
+    def get_action(self):
+        action_string = ''
+
+        if self.action == 'wait':
+            action_string = 'waiting'
+
+        if self.action == 'wait_clear':
+            action_string = 'waiting clear path'
+
+        if self.action == 'move':
+            action_string = 'going'
+
+        if self.action == 'get':
+            action_string = 'getting'
+
+        return action_string
 
     def set_coord(self, coord):
         self.sprite.x = coord[0]
@@ -46,6 +70,12 @@ class MobClass(GameObject):
 
     def set_target(self, point):
         self.create_path(self.destination, point)
+        if point:
+            cell = self.game_controller.get_cell(point)
+            if cell.is_empty():
+                self.action = 'move'
+            else:
+                self.action = 'get'
 
     def set_vector(self, index, first_number, second_number):
         if first_number > second_number:
@@ -129,6 +159,25 @@ class MobClass(GameObject):
         self.set_point_as_destination()
         self.vectors = [0, 0]
 
+        if self.path:
+            self.action = 'wait_clear'
+            if self.waited_time:
+                if self.game_controller.get_time() - self.waited_time > 2:
+                    self.path = []
+                    self.waited_time = 0
+            else:
+                self.waited_time = self.game_controller.get_time()
+        elif self.action == 'get':
+            cell = self.get_destination_cell()
+            items = copy.copy(cell.contain)
+            items.pop(-1)
+            for item in items:
+                if self.catch_item(item):
+                    self.game_controller.remove_item(item)
+            self.action = 'wait'
+        else:
+            self.action = 'wait'
+
     # Creating move path by start and end points
     def create_path(self, start, end):
         path = self.game_controller.create_path(start, end)
@@ -160,3 +209,12 @@ class MobClass(GameObject):
                     gl.GL_POLYGON,
                     ('v2i', [start_x, start_y, start_x, end_y, end_x, end_y, end_x, start_y]),
                     ('c4B', red_alpha * 4))
+
+    def catch_item(self, item):
+        if self.game_controller.is_item(item):
+            return self.inventory.add_items(item, 1)
+        else:
+            return False
+
+    def remove_item(self, item):
+        return self.inventory.delete_items(item, 1)
