@@ -34,7 +34,7 @@ class Panel:
         label = FixedLabel(self.window, text, current_position, color=black, fixed_bottom=False, font_size=12)
         self.labels[label_id] = label
 
-    def update_text(self, camera, object):
+    def update_text(self, camera, game_object, mouse_position):
         for label_id, label in self.labels.items():
             if camera:
                 if label_id == 'camera_bottom':
@@ -45,13 +45,30 @@ class Panel:
                     label.update(str(int(camera.right)))
                 elif label_id == 'camera_left':
                     label.update(str(int(camera.left)))
-            if object:
+            if game_object:
                 if label_id == 'object_name':
-                    label.update(object.get_name())
+                    label.update(game_object.get_name())
                 elif label_id == 'object_position':
-                    position = object.get_position()
+                    position = game_object.get_point()
                     text = '[' + str(int(position[0])) + ', ' + str(int(position[1])) + ']'
                     label.update(text)
+                if self.window.game_controller.is_mob(game_object):
+                    if label_id == 'object_vector':
+                        vector = game_object.get_vectors()
+                        text = '[' + str(int(vector[0])) + ', ' + str(int(vector[1])) + ']'
+                        label.update(text)
+                    elif label_id == 'object_destination':
+                        destination = game_object.get_destination()
+                        text = '[' + str(int(destination[0])) + ', ' + str(int(destination[1])) + ']'
+                        label.update(text)
+            else:
+                label.update('')
+            if mouse_position:
+                point = self.window.game_controller.get_point_by_coord(mouse_position)
+                if label_id == 'coord_point_x':
+                    label.update(str(int(mouse_position[0])) + '[' + str(int(point[0])) + ']')
+                elif label_id == 'coord_point_y':
+                    label.update(str(int(mouse_position[1])) + '[' + str(int(point[1])) + ']')
             else:
                 if label_id == 'object_name':
                     label.update('')

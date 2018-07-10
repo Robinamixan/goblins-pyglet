@@ -1,5 +1,6 @@
 from src.GameElements.Mobs.MobsController import MobsController
 from src.GameElements.Map.Map import Map
+from src.GameElements.Map.PathCreator import PathCreator
 from src.Constants import *
 import copy
 import pyglet
@@ -13,7 +14,8 @@ class GameController:
         self.focused = None
         self.mob_controller = MobsController(self)
         self.map = Map('map', self, (100, 30), map_cell_size, (30, 30))
-        self.map.create_map_from_file('GameElements/Map/test_map_2.txt')
+        self.map.create_map_from_file('GameElements/Map/templates/test_map_2.txt')
+        self.path_creator = PathCreator(self.map)
 
     def set_focus(self, mouse_position):
         point = self.get_point_by_coord(mouse_position)
@@ -38,12 +40,26 @@ class GameController:
         return self.map.get_point_by_coord(coord[0], coord[1])
 
     def add_object_in_cell(self, point, game_object):
-        self.map.add_object_in_cell(point, game_object)
+        size = game_object.get_relative_size()
+        if size == [1, 1]:
+            self.map.add_object_in_cell(point, game_object)
+        else:
+            start_point = copy.copy(point)
+            points = []
+            for i in range(size[0]):
+                for j in range(size[1]):
+                    points.append([i + start_point[0], j + start_point[1]])
+
+            for point in points:
+                self.map.add_object_in_cell(point, game_object)
 
     def remove_object_from_cell(self, point, game_object):
         self.map.remove_object_from_cell(point, game_object)
 
     # MOBS FUNCTIONS
+    def is_mob(self, game_object):
+        return self.mob_controller.is_mob(game_object)
+
     def add_mob(self, mob_object):
         self.mobs_group.append(mob_object)
 
@@ -70,6 +86,9 @@ class GameController:
         point = self.get_point_by_coord(coord)
         if self.mob_controller.is_mob(self.focused):
             self.focused.set_target(point)
+
+    def create_path(self, start, end):
+        return self.path_creator.create_path(start, end)
     # MOBS FUNCTIONS
 
     # STATIC OBJECTS FUNCTIONS
