@@ -23,6 +23,7 @@ class GameWindow(pyglet.window.Window):
         self.game_controller = GameController()
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
+        self.mouse_position = [0, 0]
 
         self.fps_display = FPSDisplay(self)
         self.show_info = True
@@ -40,17 +41,23 @@ class GameWindow(pyglet.window.Window):
         #         self.game_controller.create_gob('first_goblin', (i+1, j+1))
         self.game_controller.create_gob('first_goblin', (3, 3))
         self.game_controller.create_gob('second_goblin', (5, 10))
+        self.game_controller.create_gob('second_goblin', (7, 10))
+        self.game_controller.create_gob('second_goblin', (8, 10))
 
-        self.panel.add_label('camera_bottom', (10, 20), '')
-        self.panel.add_label('camera_top', (10, 40), '')
-        self.panel.add_label('camera_right', (10, 60), '')
-        self.panel.add_label('camera_left', (10, 80), '')
-        self.panel.add_label('object_name', (70, 20), '')
-        self.panel.add_label('object_position', (70, 40), '')
+        # self.panel.add_label('camera_bottom', (10, 20), '')
+        # self.panel.add_label('camera_top', (10, 40), '')
+        # self.panel.add_label('camera_right', (10, 60), '')
+        # self.panel.add_label('camera_left', (10, 80), '')
+        self.panel.add_label('object_name', (80, 20), '')
+        self.panel.add_label('object_position', (80, 40), '')
+        self.panel.add_label('object_vector', (80, 60), '')
+        self.panel.add_label('object_destination', (80, 80), '')
+        self.panel.add_label('coord_point_x', (10, 20), '')
+        self.panel.add_label('coord_point_y', (10, 40), '')
 
     def update(self, dt):
         self.game_controller.update_mobs(dt)
-        self.panel.update_text(self.camera, self.game_controller.get_focused())
+        self.panel.update_text(self.camera, self.game_controller.get_focused(), self.mouse_position)
         self.camera.update()
         self.zoom_level.update(str(self.camera.get_zoom_level()))
 
@@ -78,14 +85,14 @@ class GameWindow(pyglet.window.Window):
         self.init_gl(width, height)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        field_x = x + self.camera.left
-        field_y = y + self.camera.bottom
+        self.mouse_position[0] = x + self.camera.left
+        self.mouse_position[1] = y + self.camera.bottom
         if button == 1:
-            self.game_controller.set_focus((field_x, field_y))
+            self.game_controller.set_focus(self.mouse_position)
         elif button == 4:
             focus = self.game_controller.get_focused()
             if focus:
-                self.game_controller.set_focus_target((field_x, field_y))
+                self.game_controller.set_focus_target(self.mouse_position)
 
     # def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
     #     self.camera.mouse_drag(x, y, dx, dy, buttons, modifiers)

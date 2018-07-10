@@ -19,7 +19,7 @@ for ind_x, row in enumerate(cells):
         if ind_x == width_cells - 1 or ind_y == height_cells - 1:
             cells[ind_x][ind_y] = 'w'
 
-f = open('test_map_2.txt', 'w')
+f = open('test_map_3.txt', 'w')
 for row in cells:
     for cell in row:
         f.write(str(cell))

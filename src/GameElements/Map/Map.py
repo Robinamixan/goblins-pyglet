@@ -30,7 +30,7 @@ class Map:
         self.walls_batch.draw()
 
     def create_wall(self, point):
-        return Wall(self.game_controller, self.walls_batch, 'wall_' + str(point[0]) + '_' + str(point[1]), point, (25, 25), wall_image)
+        return Wall(self.game_controller, self.walls_batch, 'wall_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), wall_image)
 
     def create_map_from_file(self, file_name):
         file = open(file_name, 'r')

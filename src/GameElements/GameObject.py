@@ -1,4 +1,5 @@
 import pyglet
+from src.Constants import *
 
 
 class GameObject:
@@ -13,17 +14,23 @@ class GameObject:
         self.x = position[0]
         self.y = position[1]
 
-        self.width = size[0]
-        self.height = size[1]
+        self.width = size[0] * map_cell_size
+        self.height = size[1] * map_cell_size
         self.sprite = pyglet.sprite.Sprite(image, x=self.x, y=self.y, batch=batch)
         self.sprite.image.width = self.width
         self.sprite.image.height = self.height
 
-    def get_position(self):
+    def get_coord(self):
         return self.sprite.position
 
+    def get_point(self):
+        return self.point
+
     def get_size(self):
-        return self.width, self.height
+        return [self.width, self.height]
+
+    def get_relative_size(self):
+        return [int(self.width / map_cell_size), int(self.height / map_cell_size)]
 
     def get_name(self):
         return self.name

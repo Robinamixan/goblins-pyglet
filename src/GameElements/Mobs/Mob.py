@@ -18,6 +18,12 @@ class MobClass(GameObject):
     def get_destination_cell(self):
         return self.game_controller.get_cell(self.destination)
 
+    def get_destination(self):
+        return self.destination
+
+    def get_vectors(self):
+        return self.vectors
+
     def set_coord(self, coord):
         self.sprite.x = coord[0]
         self.sprite.y = coord[1]
@@ -59,7 +65,7 @@ class MobClass(GameObject):
             self.stop()
 
     def go_to_next_step(self, dt):
-        if self.path[0] == self.point:
+        if self.path[0] == self.destination:
             self.path.pop(0)
 
         next_step = self.path[0]
@@ -125,26 +131,11 @@ class MobClass(GameObject):
 
     # Creating move path by start and end points
     def create_path(self, start, end):
-        path = []
-        step_number = 0
-        current_step = copy.copy(list(start))
-
-        while end != current_step:
-            path.append([current_step[0], current_step[1]])
-
-            if self.path and step_number == 0:
-                step_number += 1
-                continue
-
-            for index, i in enumerate(current_step):
-                if current_step[index] < end[index]:
-                    current_step[index] += 1
-                elif current_step[index] > end[index]:
-                    current_step[index] -= 1
-                path[step_number][index] = current_step[index]
-            step_number += 1
-
-        self.path = path
+        path = self.game_controller.create_path(start, end)
+        if path:
+            self.path = path
+        elif self.path:
+            self.path = [self.path[0]]
 
     # calculate next point by frame
     def get_next_position(self, dt):
