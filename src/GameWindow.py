@@ -30,8 +30,7 @@ class GameWindow(pyglet.window.Window):
         # self.grid = GridField(25, (-500, -500), (40, 40), black)
         self.panel = Panel(self, (self.width - 250, 0), (self.width, self.height), gray)
         self.zoom_level = FixedLabel(self, str(self.camera.get_zoom_level()), (10, 35), color=black, fixed_bottom=False)
-        self.frame_rate = 1 / 60
-        pyglet.clock.schedule_interval(self.update, self.frame_rate)
+        self.timer_label = FixedLabel(self, str(self.game_controller.get_timer()), (890, 35), color=black, fixed_bottom=False)
 
         self.pre_loop_game_settings()
 
@@ -42,7 +41,7 @@ class GameWindow(pyglet.window.Window):
         self.game_controller.create_gob('first_goblin', (3, 3))
         self.game_controller.create_gob('second_goblin', (5, 10))
 
-        for i in range(7, 12):
+        for i in range(7, 16):
             self.game_controller.create_meat((i, 8))
 
         # self.panel.add_label('camera_bottom', (10, 20), '')
@@ -64,6 +63,7 @@ class GameWindow(pyglet.window.Window):
         self.panel.update_text(self.camera, self.game_controller.get_focused(), self.mouse_position)
         self.camera.update()
         self.zoom_level.update(str(self.camera.get_zoom_level()))
+        self.timer_label.update(str(self.game_controller.get_timer()))
 
     def on_key_press(self, KEY, MOD):
         if KEY == key.ESCAPE:
@@ -119,9 +119,15 @@ class GameWindow(pyglet.window.Window):
         if self.show_info:
             self.fps_display.draw()
             self.zoom_level.draw()
+            self.timer_label.draw()
 
         # Remove default modelview matrix
         glPopMatrix()
+
+    def update_timer(self, dt):
+        timer = self.game_controller.get_timer()
+        timer += 1
+        self.game_controller.set_timer(timer)
 
     def run(self):
         pyglet.app.run()
@@ -156,3 +162,5 @@ class GameWindow(pyglet.window.Window):
     def window_settings(self):
         # self.set_minimum_size(200, 200)
         self.set_location(400, 100)
+        pyglet.clock.schedule_interval(self.update, 1 / fps)
+        pyglet.clock.schedule_interval(self.update_timer, 1 )

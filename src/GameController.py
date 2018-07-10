@@ -9,6 +9,7 @@ import pyglet
 
 class GameController:
     def __init__(self):
+        self.timer = 0
         self.mobs_group = []
         self.static_group = []
         self.items_group = []
@@ -20,6 +21,12 @@ class GameController:
         self.map = MapClass('map', self, (100, 30), map_cell_size, (30, 30))
         self.map.create_map_from_file('GameElements/Map/templates/test_map_2.txt')
         self.path_creator = PathCreator(self.map)
+
+    def set_timer(self, time):
+        self.timer = time
+
+    def get_timer(self):
+        return self.timer
 
     def set_focus(self, mouse_position):
         point = self.get_point_by_coord(mouse_position)
