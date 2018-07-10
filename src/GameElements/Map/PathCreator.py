@@ -24,8 +24,9 @@ class PathCreator:
         return str(list[0]) + '_' + str(list[1])
 
     def create_path(self, start, end):
-        if end not in self.all_nodes:
+        if end not in self.all_nodes or end == start:
             return []
+        # including mobs in graph
         self.update_nodes(self.map.cells)
         self.fill_graph(start, end)
         current = end
