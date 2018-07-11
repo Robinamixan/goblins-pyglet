@@ -18,18 +18,23 @@ class ItemController:
 
         return item
 
+    def create_apple(self, position, batch):
+        item = ItemClass(self.game_controller, batch, 'apple', position, (1, 1), apple_image)
+        item.set_edible(True)
+        item.set_stat('satiety', 5)
+
+        return item
+
     def generate_items_around(self, point, radius=2, speed=2):
-        if self.game_controller.get_time() % speed == 0:
+        variety = random.randint(0, 100)
+        if variety <= speed:
             rand_x = random.randint((-1) * radius, radius)
             rand_y = random.randint((-1) * radius, radius)
-            cell = self.get_cell(rand_x, rand_y)
-
-            while not cell.is_passable():
-                rand_x = random.randint((-1) * radius, radius)
-                rand_y = random.randint((-1) * radius, radius)
-                cell = self.get_cell(rand_x, rand_y)
-
-            self.create_meat((point[0] + rand_x, point[1] + rand_y))
+            cell = self.game_controller.get_cell((point[0] + rand_x, point[1] + rand_y))
+            if rand_x == 1 and rand_y == 1:
+                c = 3
+            if cell.is_passable():
+                self.game_controller.create_apple((point[0] + rand_x, point[1] + rand_y))
 
     def is_item(self, game_object):
         return isinstance(game_object, ItemClass)

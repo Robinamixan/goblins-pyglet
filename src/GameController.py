@@ -127,6 +127,11 @@ class GameController:
 
     def draw_map(self):
         self.map.draw()
+
+    def update_trees(self, dt):
+        for static in self.static_group:
+            if self.map.is_tree(static):
+                static.update(dt)
     # STATIC OBJECTS FUNCTIONS
 
     # ITEM FUNCTIONS
@@ -141,6 +146,11 @@ class GameController:
         self.add_item(meat)
         self.add_object_in_cell(point, meat, passable=True)
 
+    def create_apple(self, point):
+        apple = self.item_controller.create_apple(point, self.items_bath)
+        self.add_item(apple)
+        self.add_object_in_cell(point, apple, passable=True)
+
     def draw_items(self):
         self.items_bath.draw()
 
@@ -151,4 +161,7 @@ class GameController:
 
         if self.focused == item_object:
             self.focused = None
+
+    def generate_items_around(self, point, radius=2, speed=2):
+        self.item_controller.generate_items_around(point, radius, speed)
     # ITEM FUNCTIONS

@@ -12,6 +12,7 @@ class MapClass:
         self.game_controller = game_controller
         self.cells_batch = pyglet.graphics.Batch()
         self.walls_batch = pyglet.graphics.Batch()
+        self.trees_batch = pyglet.graphics.Batch()
         self.lines_batch = pyglet.graphics.Batch()
 
         self.x = position[0]
@@ -29,12 +30,19 @@ class MapClass:
         self.lines_batch.draw()
         pyglet.gl.glLineWidth(1)
         self.walls_batch.draw()
+        self.trees_batch.draw()
 
     def create_wall(self, point):
         return WallClass(self.game_controller, self.walls_batch, 'wall_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), wall_image)
 
     def create_tree(self, point):
-        return TreeClass(self.game_controller, self.walls_batch, 'tree_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), tree_image)
+        return TreeClass(self.game_controller, self.trees_batch, 'tree_' + str(point[0]) + '_' + str(point[1]), point, (2, 2), tree_image)
+
+    def is_wall(self, game_object):
+        return isinstance(game_object, WallClass)
+
+    def is_tree(self, game_object):
+        return isinstance(game_object, TreeClass)
 
     def create_map_from_file(self, file_name):
         file = open(file_name, 'r')

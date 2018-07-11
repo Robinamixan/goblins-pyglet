@@ -19,6 +19,7 @@ class GameObject:
         self.sprite = pyglet.sprite.Sprite(image, x=self.x, y=self.y, batch=batch)
         self.sprite.image.width = self.width
         self.sprite.image.height = self.height
+        self.sprite.update()
 
     def get_coord(self):
         return self.sprite.position

@@ -41,8 +41,8 @@ class GameWindow(pyglet.window.Window):
         self.game_controller.create_gob('first_goblin', (3, 3))
         self.game_controller.create_gob('second_goblin', (5, 10))
 
-        for i in range(7, 16):
-            self.game_controller.create_meat((i, 8))
+        # for i in range(7, 16):
+        #     self.game_controller.create_apple((i, 8))
 
         # self.panel.add_label('camera_bottom', (10, 20), '')
         # self.panel.add_label('camera_top', (10, 40), '')
@@ -124,10 +124,11 @@ class GameWindow(pyglet.window.Window):
         # Remove default modelview matrix
         glPopMatrix()
 
-    def update_timer(self, dt):
+    def update_per_second(self, dt):
         timer = self.game_controller.get_timer()
         timer += 1
         self.game_controller.set_timer(timer)
+        self.game_controller.update_trees(dt)
 
     def run(self):
         pyglet.app.run()
@@ -163,4 +164,4 @@ class GameWindow(pyglet.window.Window):
         # self.set_minimum_size(200, 200)
         self.set_location(400, 100)
         pyglet.clock.schedule_interval(self.update, 1 / fps)
-        pyglet.clock.schedule_interval(self.update_timer, 1 )
+        pyglet.clock.schedule_interval(self.update_per_second, 1)
