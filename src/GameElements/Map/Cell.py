@@ -1,16 +1,17 @@
-class CellClass:
-    passable = True
-    contain = []
-    x = 0
-    y = 0
-    size = 0
+import pyglet
 
-    def __init__(self, x, y, size):
+
+class CellClass:
+    def __init__(self, x, y, size, background, batch):
         self.passable = True
         self.contain = []
         self.x = x
         self.y = y
         self.size = size
+
+        self.sprite = pyglet.sprite.Sprite(background, x=self.x, y=self.y, batch=batch)
+        self.sprite.image.width = self.size
+        self.sprite.image.height = self.size
 
     def is_empty(self):
         return not self.contain

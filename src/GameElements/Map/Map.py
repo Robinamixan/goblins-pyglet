@@ -1,5 +1,6 @@
 from src.GameElements.Map.Cell import CellClass
-from src.GameElements.Static.Wall import Wall
+from src.GameElements.Static.Wall import WallClass
+from src.GameElements.Static.Tree import TreeClass
 from src.Constants import *
 from pyglet.gl import gl
 import pyglet
@@ -30,7 +31,10 @@ class MapClass:
         self.walls_batch.draw()
 
     def create_wall(self, point):
-        return Wall(self.game_controller, self.walls_batch, 'wall_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), wall_image)
+        return WallClass(self.game_controller, self.walls_batch, 'wall_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), wall_image)
+
+    def create_tree(self, point):
+        return TreeClass(self.game_controller, self.walls_batch, 'tree_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), tree_image)
 
     def create_map_from_file(self, file_name):
         file = open(file_name, 'r')
@@ -40,6 +44,8 @@ class MapClass:
             for character in line:
                 if character == 'w':
                     self.game_controller.create_wall((ind_x, ind_y))
+                if character == 't':
+                    self.game_controller.create_tree((ind_x, ind_y))
 
                 if character == '\n':
                     ind_x = 0
@@ -91,7 +97,7 @@ class MapClass:
             self.cells[i] = [None] * self.map_size[1]
             for j in range(0, self.map_size[1]):
                 point = self.get_coord_by_point(i, j)
-                self.cells[i][j] = CellClass(point[0], point[1], self.cell_size)
+                self.cells[i][j] = CellClass(point[0], point[1], self.cell_size, grass_image, self.cells_batch)
 
                 start_x = self.x + self.cell_size * i
                 start_y = self.y + self.cell_size * j

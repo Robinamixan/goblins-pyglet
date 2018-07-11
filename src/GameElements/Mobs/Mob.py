@@ -161,12 +161,12 @@ class MobClass(GameObject):
 
         if self.path:
             self.action = 'wait_clear'
-            if self.waited_time:
-                if self.game_controller.get_time() - self.waited_time > 2:
-                    self.path = []
-                    self.waited_time = 0
-            else:
-                self.waited_time = self.game_controller.get_time()
+            # if self.waited_time:
+            #     if self.game_controller.get_time() - self.waited_time > 2:
+            #         self.path = []
+            #         self.waited_time = 0
+            # else:
+            #     self.waited_time = self.game_controller.get_time()
         elif self.action == 'get':
             cell = self.get_destination_cell()
             items = copy.copy(cell.contain)

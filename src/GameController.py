@@ -1,6 +1,6 @@
 from src.GameElements.Mobs.MobsController import MobsController
 from src.GameElements.Items.ItemsController import ItemController
-from src.GameElements.Map.MapClass import MapClass
+from src.GameElements.Map.Map import MapClass
 from src.GameElements.Map.PathCreator import PathCreator
 from src.Constants import *
 import copy
@@ -108,6 +108,11 @@ class GameController:
         wall = self.map.create_wall(point)
         self.add_static_object(wall)
         self.add_object_in_cell(point, wall)
+
+    def create_tree(self, point):
+        tree = self.map.create_tree(point)
+        self.add_static_object(tree)
+        self.add_object_in_cell(point, tree)
 
     def add_static_object(self, static_object):
         self.static_group.append(static_object)
