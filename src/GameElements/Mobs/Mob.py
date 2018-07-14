@@ -48,25 +48,14 @@ class MobClass(GameObject):
 
         return action_string
 
-    def set_coord(self, coord):
-        self.sprite.x = coord[0]
-        self.sprite.y = coord[1]
-        self.x = self.sprite.x
-        self.y = self.sprite.y
-
-    def set_coord_x(self, x):
-        self.sprite.x = x
-        self.x = self.sprite.x
-
-    def set_coord_y(self, y):
-        self.sprite.y = y
-        self.y = self.sprite.y
-
     def set_point_as_destination(self, index=None):
         if index is not None:
             self.point[index] = copy.copy(self.destination[index])
         else:
             self.point = copy.copy(self.destination)
+
+    def set_destination(self, point):
+        self.destination = list(point)
 
     def set_target(self, point):
         self.create_path(self.destination, point)

@@ -1,5 +1,6 @@
 import pyglet
 from pyglet.gl import gl
+from pyglet.input.base import Button
 from src.WindowElements.FixedLabel import FixedLabel
 from src.Constants import *
 
@@ -12,7 +13,9 @@ class Panel:
         self.color = color
         self.batch = pyglet.graphics.Batch()
         self.labels = {}
-        self.variable = 0
+        self.labels_amount = 0
+
+        self.button = Button('click', 'click')
 
         start_x = self.start_point[0]
         start_y = self.start_point[1]
@@ -27,84 +30,113 @@ class Panel:
             ('v2i', [start_x, start_y, start_x, end_y, end_x, end_y, end_x, start_y]),
             ('c4B', self.color * 4))
 
-    def add_label(self, label_id, position):
-        current_position = [0, 0]
-        current_position[0] = position[0] + self.start_point[0]
-        current_position[1] = position[1] + self.start_point[1]
-        label = FixedLabel(self.window, '', current_position, color=black, fixed_bottom=False, font_size=12)
-        self.labels[label_id] = label
+    def create_label(self):
+        index = self.labels_amount
+        self.labels[index] = {}
+        self.labels[index]['visible'] = False
+
+        label = FixedLabel(self.window, '', [0, 0], color=black, fixed_bottom=False, font_size=12)
+        self.labels[index]['label'] = label
+        self.labels_amount += 1
+
+        return index
+
+    def get_free_label_index(self):
+        for index, item in self.labels.items():
+            if not item['visible']:
+                return index
+
+        return None
+
+    def set_label_position(self, index, position):
+        self.labels[index]['visible'] = True
+        relative_position = [self.start_point[0] + position[0], self.start_point[1] + position[1]]
+        self.labels[index]['label'].set_position(relative_position)
+
+    def set_label_text(self, index, text):
+        self.labels[index]['label'].update(text)
+
+    def set_label(self, text, position):
+        index = self.get_free_label_index()
+        if index is None:
+            index = self.create_label()
+
+        self.set_label_position(index, position)
+        self.set_label_text(index, text)
+
+    def clear_labels(self):
+        for index, item in self.labels.items():
+            self.labels[index]['visible'] = False
 
     def update_text(self, camera, game_object, mouse_position):
-        for label_id, label in self.labels.items():
-            if camera:
-                if label_id == 'camera_bottom':
-                    label.update(str(int(camera.bottom)))
-                elif label_id == 'camera_top':
-                    label.update(str(int(camera.top)))
-                elif label_id == 'camera_right':
-                    label.update(str(int(camera.right)))
-                elif label_id == 'camera_left':
-                    label.update(str(int(camera.left)))
-            if game_object:
-                if label_id == 'object_name':
-                    label.update(game_object.get_name())
-                elif label_id == 'object_position':
-                    position = game_object.get_point()
-                    text = '[' + str(int(position[0])) + ', ' + str(int(position[1])) + ']'
-                    label.update(text)
-                elif self.window.game_controller.is_mob(game_object):
-                    if label_id == 'object_vector':
-                        vector = game_object.get_vectors()
-                        text = '[' + str(int(vector[0])) + ', ' + str(int(vector[1])) + ']'
-                        label.update(text)
-                    elif label_id == 'object_destination':
-                        destination = game_object.get_destination()
-                        text = '[' + str(int(destination[0])) + ', ' + str(int(destination[1])) + ']'
-                        label.update(text)
-                    elif label_id == 'object_action':
-                        action = game_object.get_action()
-                        text = action
-                        label.update(text)
-                    elif label_id == 'object_inventory_info':
-                        inventory = game_object.get_inventory_info()
-                        empty = True
-                        for index, item in inventory['items'].items():
-                            if item['object'] is not None:
-                                empty = False
-                                break
+        self.clear_labels()
+        if camera:
+            pass
 
-                        text = 'size: ' + str(inventory['size'])
-                        if empty:
-                            text += ', empty'
+        if game_object:
+            self.set_label(game_object.get_name(), (90, 20))
 
-                        label.update('Inventory: ' + text)
-                    elif label_id == 'object_inventory_contain':
-                        inventory = game_object.get_inventory_info()
-                        empty = True
-                        text = ''
-                        for index, item in inventory['items'].items():
-                            if item['object'] is not None:
-                                empty = False
-                                text += item['object'].name + '(' + str(item['amount']) + '), '
+            position = game_object.get_point()
+            position_str = '[' + str(int(position[0])) + ', ' + str(int(position[1])) + ']'
+            self.set_label(position_str, (90, 60))
 
-                        if not empty:
-                            label.update('Contain: ' + text)
+            if self.window.game_controller.is_mob(game_object):
+                self.set_mobs_labels(game_object)
 
+            if self.window.game_controller.is_cave(game_object):
+                self.set_building_labels(game_object)
+        if mouse_position:
+            point = self.window.game_controller.get_point_by_coord(mouse_position)
+
+            x_str = str(int(mouse_position[0])) + '[' + str(int(point[0])) + ']'
+            self.set_label(x_str, (10, 20))
+
+            y_str = str(int(mouse_position[1])) + '[' + str(int(point[1])) + ']'
+            self.set_label(y_str, (10, 40))
+
+    def set_mobs_labels(self, game_object):
+        action_str = game_object.get_action()
+        self.set_label(action_str, (90, 40))
+
+        destination = game_object.get_destination()
+        destination_str = '[' + str(int(destination[0])) + ', ' + str(int(destination[1])) + ']'
+        self.set_label(destination_str, (90, 80))
+
+        vector = game_object.get_vectors()
+        vector_str = '[' + str(int(vector[0])) + ', ' + str(int(vector[1])) + ']'
+        self.set_label(vector_str, (90, 100))
+
+        inventory = game_object.get_inventory_info()
+        inventory_title = 'Inventory(size=' + str(inventory['size']) + '): '
+        first_line_x = 150
+        self.set_label(inventory_title, (10, first_line_x))
+        line = 1
+        for index, item in inventory['items'].items():
+            if item['object'] is None:
+                continue
+            else:
+                item_str = ' - ' + item['object'].get_name() + '(' + str(item['amount']) + ')'
+                self.set_label(item_str, (10, first_line_x + line * 20))
+                line += 1
+
+    def set_building_labels(self, game_object):
+        staff = game_object.get_staff_info()
+        staff_title = 'Staff(size=' + str(staff['size']) + '): '
+        first_line_x = 100
+        self.set_label(staff_title, (10, first_line_x))
+
+        line = 1
+        for index, item in staff['members'].items():
+            if item['mob'] is None:
+                continue
+            else:
+                if item['inside']:
+                    condition_str = 'inside'
                 else:
-                    label.update('')
-            else:
-                label.update('')
-            if mouse_position:
-                point = self.window.game_controller.get_point_by_coord(mouse_position)
-                if label_id == 'coord_point_x':
-                    label.update(str(int(mouse_position[0])) + '[' + str(int(point[0])) + ']')
-                elif label_id == 'coord_point_y':
-                    label.update(str(int(mouse_position[1])) + '[' + str(int(point[1])) + ']')
-            else:
-                if label_id == 'object_name':
-                    label.update('')
-                elif label_id == 'object_position':
-                    label.update('')
+                    condition_str = 'outside'
+                item_str = ' - ' + item['mob'].get_name() + '(' + condition_str + ')'
+                self.set_label(item_str, (10, first_line_x + line * 20))
+                line += 1
 
     def draw(self):
         gl.glMatrixMode(gl.GL_MODELVIEW)
@@ -118,7 +150,8 @@ class Panel:
 
         self.batch.draw()
         for label_id, label in self.labels.items():
-            label.raw_draw()
+            if label['visible']:
+                label['label'].raw_draw()
 
         gl.glPopMatrix()
 

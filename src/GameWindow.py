@@ -44,20 +44,6 @@ class GameWindow(pyglet.window.Window):
         # for i in range(7, 16):
         #     self.game_controller.create_apple((i, 8))
 
-        # self.panel.add_label('camera_bottom', (10, 20), '')
-        # self.panel.add_label('camera_top', (10, 40), '')
-        # self.panel.add_label('camera_right', (10, 60), '')
-        # self.panel.add_label('camera_left', (10, 80), '')
-        self.panel.add_label('object_name', (90, 20))
-        self.panel.add_label('object_action', (90, 40))
-        self.panel.add_label('object_position', (90, 60))
-        self.panel.add_label('object_destination', (90, 80))
-        self.panel.add_label('object_vector', (90, 100))
-        self.panel.add_label('object_inventory_info', (10, 150))
-        self.panel.add_label('object_inventory_contain', (10, 170))
-        self.panel.add_label('coord_point_x', (10, 20))
-        self.panel.add_label('coord_point_y', (10, 40))
-
     def update(self, dt):
         self.game_controller.update_mobs(dt)
         self.panel.update_text(self.camera, self.game_controller.get_focused(), self.mouse_position)

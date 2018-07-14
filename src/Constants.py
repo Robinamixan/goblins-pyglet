@@ -18,3 +18,5 @@ meat_image = pyglet.image.load('../resources/meat_alpha_1.1.png')
 grass_image = pyglet.image.load('../resources/grass_1.2.png')
 tree_image = pyglet.image.load('../resources/tree_alpha_1.2.png')
 apple_image = pyglet.image.load('../resources/apple_alpha_1.1.png')
+cave_image = pyglet.image.load('../resources/cave_1.1.png')
+

@@ -35,8 +35,17 @@ class GameController:
         self.focused = map_object
 
     def draw_focus(self):
-        if self.mob_controller.is_mob(self.focused):
+        if self.is_mob(self.focused):
             self.focused.draw_path()
+
+    def set_focus_target(self, coord):
+        if self.is_mob(self.focused):
+            point = self.get_point_by_coord(coord)
+            self.focused.set_target(point)
+
+        if self.is_cave(self.focused):
+            cave = self.focused
+            cave.send_member()
 
     def get_focused(self):
         return self.focused
@@ -89,15 +98,13 @@ class GameController:
     def draw_mobs(self):
         self.mobs_bath.draw()
 
-    def create_gob(self, name, point):
+    def create_gob(self, name, point, add_to_cell=True):
         gob = self.mob_controller.create_gob(name, point, self.mobs_bath)
         self.add_mob(gob)
-        self.add_object_in_cell(point, gob)
+        if add_to_cell:
+            self.add_object_in_cell(point, gob)
 
-    def set_focus_target(self, coord):
-        if self.mob_controller.is_mob(self.focused):
-            point = self.get_point_by_coord(coord)
-            self.focused.set_target(point)
+        return gob
 
     def create_path(self, start, end):
         return self.path_creator.create_path(start, end)
@@ -113,6 +120,17 @@ class GameController:
         tree = self.map.create_tree(point)
         self.add_static_object(tree)
         self.add_object_in_cell(point, tree)
+
+    def create_cave(self, point):
+        cave = self.map.create_cave(point)
+
+        gob = self.create_gob('test_1', point, add_to_cell=False)
+        cave.add_to_staff(gob)
+
+        gob = self.create_gob('test_2', point, add_to_cell=False)
+        cave.add_to_staff(gob)
+        self.add_static_object(cave)
+        self.add_object_in_cell(point, cave)
 
     def add_static_object(self, static_object):
         self.static_group.append(static_object)
@@ -132,6 +150,9 @@ class GameController:
         for static in self.static_group:
             if self.map.is_tree(static):
                 static.update(dt)
+
+    def is_cave(self, game_object):
+        return self.map.is_cave(game_object)
     # STATIC OBJECTS FUNCTIONS
 
     # ITEM FUNCTIONS
