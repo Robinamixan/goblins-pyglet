@@ -14,7 +14,8 @@ class GameWindow(pyglet.window.Window):
         conf = Config(sample_buffers=1,
                       samples=4,
                       depth_size=16,
-                      double_buffer=True)
+                      double_buffer=True,
+                      vsync=False)
 
         super().__init__(config=conf, width=width, height=height, *args, **kwargs)
         self.window_settings()
@@ -76,8 +77,8 @@ class GameWindow(pyglet.window.Window):
         self.init_gl(width, height)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        self.mouse_position[0] = x + self.camera.left
-        self.mouse_position[1] = y + self.camera.bottom
+        self.mouse_position[0] = x*self.camera.zoom_level + self.camera.left
+        self.mouse_position[1] = y*self.camera.zoom_level + self.camera.bottom
         if button == 1:
             self.game_controller.set_focus(self.mouse_position)
         elif button == 4:

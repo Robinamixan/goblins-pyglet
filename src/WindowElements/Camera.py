@@ -52,13 +52,13 @@ class Camera:
         pre_top = self.top - self.vect_y * self.zoom_level
 
         valid = True
-        if -1000 >= pre_left or pre_left >= 1500:
+        if -1000 >= pre_left or pre_left >= 2000:
             valid = False
-        if -1000 >= pre_right or pre_right >= 1500:
+        if -1000 >= pre_right or pre_right >= 2000:
             valid = False
         if -1000 >= pre_bottom or pre_bottom >= 1000:
             valid = False
-        if -1000 >= pre_top or pre_top >= 1000:
+        if -1000 >= pre_top or pre_top >= 1500:
             valid = False
 
         if valid:

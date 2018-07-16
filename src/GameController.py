@@ -48,10 +48,6 @@ class GameController:
             point = self.get_point_by_coord(coord)
             self.focused.set_target(point)
 
-        if self.is_cave(self.focused):
-            cave = self.focused
-            cave.send_member()
-
     def get_focused(self):
         return self.focused
 
