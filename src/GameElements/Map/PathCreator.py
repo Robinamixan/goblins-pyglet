@@ -51,7 +51,7 @@ class PathCreator:
         # including mobs in graph
         self.update_nodes(self.map.cells)
 
-        if end not in self.all_nodes :
+        if end not in self.all_nodes:
             return []
 
         self.fill_graph(start, end)

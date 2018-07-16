@@ -5,6 +5,8 @@ from src.GameElements.Map.PathCreator import PathCreator
 from src.Constants import *
 import copy
 import pyglet
+import random
+import math
 
 
 class GameController:
@@ -28,6 +30,9 @@ class GameController:
     def get_timer(self):
         return self.timer
 
+    def get_distance_between(self, point_1, point_2):
+        return math.sqrt((point_1[0] - point_2[0]) ** 2 + (point_1[1] - point_2[1]) ** 2)
+
     def set_focus(self, mouse_position):
         point = self.get_point_by_coord(mouse_position)
         map_object = self.map.get_cell_object(point)
@@ -35,8 +40,13 @@ class GameController:
         self.focused = map_object
 
     def draw_focus(self):
-        if self.mob_controller.is_mob(self.focused):
+        if self.is_mob(self.focused):
             self.focused.draw_path()
+
+    def set_focus_target(self, coord):
+        if self.is_mob(self.focused):
+            point = self.get_point_by_coord(coord)
+            self.focused.set_target(point)
 
     def get_focused(self):
         return self.focused
@@ -89,15 +99,13 @@ class GameController:
     def draw_mobs(self):
         self.mobs_bath.draw()
 
-    def create_gob(self, name, point):
+    def create_gob(self, name, point, add_to_cell=True):
         gob = self.mob_controller.create_gob(name, point, self.mobs_bath)
         self.add_mob(gob)
-        self.add_object_in_cell(point, gob)
+        if add_to_cell:
+            self.add_object_in_cell(point, gob)
 
-    def set_focus_target(self, coord):
-        if self.mob_controller.is_mob(self.focused):
-            point = self.get_point_by_coord(coord)
-            self.focused.set_target(point)
+        return gob
 
     def create_path(self, start, end):
         return self.path_creator.create_path(start, end)
@@ -114,6 +122,12 @@ class GameController:
         self.add_static_object(tree)
         self.add_object_in_cell(point, tree)
 
+    def create_cave(self, point):
+        cave = self.map.create_cave(point)
+
+        self.add_static_object(cave)
+        self.add_object_in_cell(point, cave)
+
     def add_static_object(self, static_object):
         self.static_group.append(static_object)
 
@@ -127,6 +141,13 @@ class GameController:
 
     def draw_map(self):
         self.map.draw()
+
+    def is_cave(self, game_object):
+        return self.map.is_cave(game_object)
+
+    def update_static(self, dt):
+        for static in self.static_group:
+            static.update(dt)
     # STATIC OBJECTS FUNCTIONS
 
     # ITEM FUNCTIONS
@@ -141,6 +162,11 @@ class GameController:
         self.add_item(meat)
         self.add_object_in_cell(point, meat, passable=True)
 
+    def create_apple(self, point):
+        apple = self.item_controller.create_apple(point, self.items_bath)
+        self.add_item(apple)
+        self.add_object_in_cell(point, apple, passable=True)
+
     def draw_items(self):
         self.items_bath.draw()
 
@@ -151,4 +177,25 @@ class GameController:
 
         if self.focused == item_object:
             self.focused = None
+
+    def generate_items_around(self, point, radius=2, speed=2):
+        self.item_controller.generate_items_around(point, radius, speed)
+
+    def get_food_item(self, point=None, excepts=None):
+        available_items = [e for e in self.items_group if e.get_point() not in excepts]
+        if available_items:
+            if point:
+                min_distance = self.get_distance_between(point, available_items[0].get_point())
+                nearest_index = False
+                for index, item in enumerate(available_items):
+                    distance = self.get_distance_between(point, item.get_point())
+                    if distance <= min_distance:
+                        min_distance = distance
+                        nearest_index = index
+                if nearest_index is not False:
+                    return available_items[nearest_index]
+                else:
+                    return None
+            else:
+                return random.choice(available_items)
     # ITEM FUNCTIONS

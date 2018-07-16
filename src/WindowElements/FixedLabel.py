@@ -25,6 +25,9 @@ class FixedLabel:
                            font_size=font_size, bold=True,
                            color=self.color)
 
+    def set_position(self, coord):
+        self.position = coord
+
     def update(self, text):
         self.label.text = text
         if self.fixed_bottom:

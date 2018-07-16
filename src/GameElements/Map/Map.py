@@ -1,6 +1,7 @@
 from src.GameElements.Map.Cell import CellClass
 from src.GameElements.Static.Wall import WallClass
 from src.GameElements.Static.Tree import TreeClass
+from src.GameElements.Static.Cave import CaveClass
 from src.Constants import *
 from pyglet.gl import gl
 import pyglet
@@ -12,6 +13,8 @@ class MapClass:
         self.game_controller = game_controller
         self.cells_batch = pyglet.graphics.Batch()
         self.walls_batch = pyglet.graphics.Batch()
+        self.trees_batch = pyglet.graphics.Batch()
+        self.buildings_batch = pyglet.graphics.Batch()
         self.lines_batch = pyglet.graphics.Batch()
 
         self.x = position[0]
@@ -29,12 +32,26 @@ class MapClass:
         self.lines_batch.draw()
         pyglet.gl.glLineWidth(1)
         self.walls_batch.draw()
+        self.trees_batch.draw()
+        self.buildings_batch.draw()
 
     def create_wall(self, point):
         return WallClass(self.game_controller, self.walls_batch, 'wall_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), wall_image)
 
     def create_tree(self, point):
-        return TreeClass(self.game_controller, self.walls_batch, 'tree_' + str(point[0]) + '_' + str(point[1]), point, (1, 1), tree_image)
+        return TreeClass(self.game_controller, self.trees_batch, 'tree_' + str(point[0]) + '_' + str(point[1]), point, (2, 2), tree_image)
+
+    def create_cave(self, point):
+        return CaveClass(self.game_controller, self.buildings_batch, 'cave_' + str(point[0]) + '_' + str(point[1]), point, (2, 2), cave_image)
+
+    def is_wall(self, game_object):
+        return isinstance(game_object, WallClass)
+
+    def is_tree(self, game_object):
+        return isinstance(game_object, TreeClass)
+
+    def is_cave(self, game_object):
+        return isinstance(game_object, CaveClass)
 
     def create_map_from_file(self, file_name):
         file = open(file_name, 'r')
@@ -46,6 +63,8 @@ class MapClass:
                     self.game_controller.create_wall((ind_x, ind_y))
                 if character == 't':
                     self.game_controller.create_tree((ind_x, ind_y))
+                if character == 'c':
+                    self.game_controller.create_cave((ind_x, ind_y))
 
                 if character == '\n':
                     ind_x = 0
@@ -105,18 +124,18 @@ class MapClass:
                 end_x = start_x + self.cell_size
                 end_y = start_y + self.cell_size
 
-                self.cells_batch.add(
-                    8,
-                    gl.GL_LINES,
-                    None,
-                    ('v2i', (
-                        start_x, start_y, end_x, start_y,  # start -> end
-                        end_x, start_y, end_x, end_y,
-                        end_x, end_y, start_x, end_y,
-                        start_x, end_y, start_x, start_y,
-                    )),
-                    ('c4B', color)
-                )
+                # self.cells_batch.add(
+                #     8,
+                #     gl.GL_LINES,
+                #     None,
+                #     ('v2i', (
+                #         start_x, start_y, end_x, start_y,  # start -> end
+                #         end_x, start_y, end_x, end_y,
+                #         end_x, end_y, start_x, end_y,
+                #         start_x, end_y, start_x, start_y,
+                #     )),
+                #     ('c4B', color)
+                # )
 
     def set_map_borders(self):
         line_color = tuple(red) * 8
