@@ -95,7 +95,7 @@ class Panel:
             self.set_label(y_str, (10, 40))
 
     def set_mobs_labels(self, game_object):
-        action_str = game_object.get_action()
+        action_str = game_object.get_action_string()
         self.set_label(action_str, (90, 40))
 
         destination = game_object.get_destination()

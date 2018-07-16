@@ -49,8 +49,30 @@ class GameObject:
 
         return horizontal and vertical
 
+    def get_around_points(self):
+        start_point = [self.point[0] - 1, self.point[1] - 1]
+
+        size = self.get_relative_size()
+        end_point = [self.point[0] + size[0], self.point[1] + size[1]]
+
+        object_points = []
+        for i in range(0, size[0]):
+            for j in range(0, size[1]):
+                object_points.append([self.point[0] + i, self.point[1] + j])
+
+        around_points = []
+        for i in range(start_point[0], end_point[0] + 1):
+            for j in range(start_point[1], end_point[1] + 1):
+                if [i, j] not in object_points:
+                    around_points.append([i, j])
+
+        return around_points
+
     def draw(self):
         self.sprite.draw()
+
+    def update(self, dt):
+        pass
 
     def delete(self):
         self.sprite.delete()

@@ -28,7 +28,7 @@ class InventoryClass:
                 cell['amount'] = amount
                 return True
             elif cell['object'].name == item.name:
-                if cell['amount'] < item.stack:
+                if item.stack is not None and cell['amount'] < item.stack:
                     cell['amount'] += amount
                     return True
 
@@ -61,3 +61,15 @@ class InventoryClass:
                 return index
 
         return False
+
+    def is_full(self):
+        full_inventory = True
+        for index, cell in self.stock.items():
+            if cell['object'] is not None:
+                if cell['object'].stack is None or cell['amount'] < cell['object'].stack:
+                    full_inventory = False
+                    break
+            else:
+                full_inventory = False
+                break
+        return full_inventory

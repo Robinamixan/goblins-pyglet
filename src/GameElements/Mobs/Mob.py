@@ -14,6 +14,13 @@ class MobClass(GameObject):
         self.path = []
 
         self.speed = speed
+        self.actions = {
+            'wait': 'waiting',
+            'wait_clear': 'waiting clear path',
+            'move': 'going',
+            'get': 'getting',
+            'return': 'return to base'
+        }
         self.action = 'wait'
         self.inventory = InventoryClass(inventory_size)
 
@@ -32,21 +39,10 @@ class MobClass(GameObject):
 
     # Getting current acts of mob
     def get_action(self):
-        action_string = ''
+        return self.action
 
-        if self.action == 'wait':
-            action_string = 'waiting'
-
-        if self.action == 'wait_clear':
-            action_string = 'waiting clear path'
-
-        if self.action == 'move':
-            action_string = 'going'
-
-        if self.action == 'get':
-            action_string = 'getting'
-
-        return action_string
+    def get_action_string(self):
+        return self.actions[self.action]
 
     def set_point_as_destination(self, index=None):
         if index is not None:
@@ -62,9 +58,13 @@ class MobClass(GameObject):
         if point:
             cell = self.game_controller.get_cell(point)
             if cell.is_empty():
-                self.action = 'move'
+                self.set_action('move')
             else:
-                self.action = 'get'
+                self.set_action('get')
+
+    def set_action(self, action):
+        if action in self.actions.keys():
+            self.action = action
 
     def set_vector(self, index, first_number, second_number):
         if first_number > second_number:
@@ -149,23 +149,23 @@ class MobClass(GameObject):
         self.vectors = [0, 0]
 
         if self.path:
-            self.action = 'wait_clear'
+            self.set_action('wait_clear')
             # if self.waited_time:
             #     if self.game_controller.get_time() - self.waited_time > 2:
             #         self.path = []
             #         self.waited_time = 0
             # else:
             #     self.waited_time = self.game_controller.get_time()
-        elif self.action == 'get':
+        elif self.get_action() == 'get':
             cell = self.get_destination_cell()
             items = copy.copy(cell.contain)
             items.pop(-1)
             for item in items:
                 if self.catch_item(item):
                     self.game_controller.remove_item(item)
-            self.action = 'wait'
+            self.set_action('wait')
         else:
-            self.action = 'wait'
+            self.set_action('wait')
 
     # Creating move path by start and end points
     def create_path(self, start, end):
@@ -207,3 +207,12 @@ class MobClass(GameObject):
 
     def remove_item(self, item):
         return self.inventory.delete_items(item, 1)
+
+    def is_inventory_full(self):
+        return self.inventory.is_full()
+
+    def is_waiting(self):
+        if self.get_action() == 'wait':
+            return True
+        else:
+            return False

@@ -114,7 +114,7 @@ class GameWindow(pyglet.window.Window):
         timer = self.game_controller.get_timer()
         timer += 1
         self.game_controller.set_timer(timer)
-        self.game_controller.update_trees(dt)
+        self.game_controller.update_static(dt)
 
     def run(self):
         pyglet.app.run()

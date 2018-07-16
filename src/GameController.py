@@ -124,11 +124,6 @@ class GameController:
     def create_cave(self, point):
         cave = self.map.create_cave(point)
 
-        gob = self.create_gob('test_1', point, add_to_cell=False)
-        cave.add_to_staff(gob)
-
-        gob = self.create_gob('test_2', point, add_to_cell=False)
-        cave.add_to_staff(gob)
         self.add_static_object(cave)
         self.add_object_in_cell(point, cave)
 
@@ -146,13 +141,12 @@ class GameController:
     def draw_map(self):
         self.map.draw()
 
-    def update_trees(self, dt):
-        for static in self.static_group:
-            if self.map.is_tree(static):
-                static.update(dt)
-
     def is_cave(self, game_object):
         return self.map.is_cave(game_object)
+
+    def update_static(self, dt):
+        for static in self.static_group:
+            static.update(dt)
     # STATIC OBJECTS FUNCTIONS
 
     # ITEM FUNCTIONS

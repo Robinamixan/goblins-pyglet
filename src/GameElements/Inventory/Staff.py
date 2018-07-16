@@ -12,12 +12,12 @@ class StaffClass:
         self.staff[name]['mob'] = mob
         self.staff[name]['inside'] = inside
 
-    def remove_mob(self, mob):
+    def remove_member(self, mob):
         for name, member in self.staff.items():
             if member == mob:
                 del self.staff[name]
 
-    def get_mob(self, name='', is_inside=True):
+    def get_member(self, name='', is_inside=True):
         if name == '':
             for name, member in self.staff.items():
                 if is_inside:
