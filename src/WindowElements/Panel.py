@@ -106,18 +106,7 @@ class Panel:
         vector_str = '[' + str(int(vector[0])) + ', ' + str(int(vector[1])) + ']'
         self.set_label(vector_str, (90, 100))
 
-        inventory = game_object.get_inventory_info()
-        inventory_title = 'Inventory(size=' + str(inventory['size']) + '): '
-        first_line_x = 150
-        self.set_label(inventory_title, (10, first_line_x))
-        line = 1
-        for index, item in inventory['items'].items():
-            if item['object'] is None:
-                continue
-            else:
-                item_str = ' - ' + item['object'].get_name() + '(' + str(item['amount']) + ')'
-                self.set_label(item_str, (10, first_line_x + line * 20))
-                line += 1
+        self.set_inventory_block(game_object.get_inventory_info(), 10, 150)
 
     def set_building_labels(self, game_object):
         staff = game_object.get_staff_info()
@@ -136,6 +125,20 @@ class Panel:
                     condition_str = 'outside'
                 item_str = ' - ' + item['mob'].get_name() + '(' + condition_str + ')'
                 self.set_label(item_str, (10, first_line_x + line * 20))
+                line += 1
+
+        self.set_inventory_block(game_object.get_inventory_info(), 10, 300)
+
+    def set_inventory_block(self, inventory, x, y):
+        inventory_title = 'Inventory(size=' + str(inventory['size']) + '): '
+        self.set_label(inventory_title, (x, y))
+        line = 1
+        for index, item in inventory['items'].items():
+            if item['object'] is None:
+                continue
+            else:
+                item_str = ' - ' + item['object'].get_name() + '(' + str(item['amount']) + ')'
+                self.set_label(item_str, (x, y + line * 20))
                 line += 1
 
     def draw(self):

@@ -208,6 +208,9 @@ class MobClass(GameObject):
     def remove_item(self, item):
         return self.inventory.delete_items(item, 1)
 
+    def remove_items(self, item, amount):
+        return self.inventory.delete_items(item, amount)
+
     def is_inventory_full(self):
         return self.inventory.is_full()
 

@@ -45,3 +45,11 @@ class StaffClass:
 
         return members
 
+    def get_all_inside(self):
+        members = []
+        for name, member in self.staff.items():
+            if member['inside']:
+                members.append(member['mob'])
+
+        return members
+

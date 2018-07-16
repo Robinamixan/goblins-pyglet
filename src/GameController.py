@@ -5,6 +5,8 @@ from src.GameElements.Map.PathCreator import PathCreator
 from src.Constants import *
 import copy
 import pyglet
+import random
+import math
 
 
 class GameController:
@@ -27,6 +29,9 @@ class GameController:
 
     def get_timer(self):
         return self.timer
+
+    def get_distance_between(self, point_1, point_2):
+        return math.sqrt((point_1[0] - point_2[0]) ** 2 + (point_1[1] - point_2[1]) ** 2)
 
     def set_focus(self, mouse_position):
         point = self.get_point_by_coord(mouse_position)
@@ -179,4 +184,22 @@ class GameController:
 
     def generate_items_around(self, point, radius=2, speed=2):
         self.item_controller.generate_items_around(point, radius, speed)
+
+    def get_food_item(self, point=None, excepts=None):
+        available_items = [e for e in self.items_group if e.get_point() not in excepts]
+        if available_items:
+            if point:
+                min_distance = self.get_distance_between(point, available_items[0].get_point())
+                nearest_index = False
+                for index, item in enumerate(available_items):
+                    distance = self.get_distance_between(point, item.get_point())
+                    if distance <= min_distance:
+                        min_distance = distance
+                        nearest_index = index
+                if nearest_index is not False:
+                    return available_items[nearest_index]
+                else:
+                    return None
+            else:
+                return random.choice(available_items)
     # ITEM FUNCTIONS

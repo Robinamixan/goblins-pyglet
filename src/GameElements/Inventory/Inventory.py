@@ -57,7 +57,7 @@ class InventoryClass:
 
     def get_cell_number_for_item(self, item):
         for index, cell in self.stock.items():
-            if cell['object'].name == item.name:
+            if cell['object'] and cell['object'].name == item.name:
                 return index
 
         return False

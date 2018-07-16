@@ -35,11 +35,12 @@ class GameWindow(pyglet.window.Window):
         self.pre_loop_game_settings()
 
     def pre_loop_game_settings(self):
+        pass
         # for i in range(25):
         #     for j in range(25):
         #         self.game_controller.create_gob('first_goblin', (i+1, j+1))
-        self.game_controller.create_gob('first_goblin', (3, 3))
-        self.game_controller.create_gob('second_goblin', (5, 10))
+        # self.game_controller.create_gob('first_goblin', (3, 3))
+        # self.game_controller.create_gob('second_goblin', (5, 10))
 
         # for i in range(7, 16):
         #     self.game_controller.create_apple((i, 8))
