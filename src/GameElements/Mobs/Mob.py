@@ -95,6 +95,7 @@ class MobClass(GameObject):
             next_cell.set_object(self)
             self.destination = next_step
             self.update_move(dt)
+            self.update_sprite_image()
         else:
             self.stop()
 
@@ -147,6 +148,7 @@ class MobClass(GameObject):
         self.set_coord(self.game_controller.get_coord_by_point(self.destination))
         self.set_point_as_destination()
         self.vectors = [0, 0]
+        self.update_sprite_image()
 
         if self.path:
             self.set_action('wait_clear')
@@ -181,6 +183,20 @@ class MobClass(GameObject):
         next_y = self.sprite.y + dt * self.vectors[1] * 10 * self.speed
 
         return next_x, next_y
+
+    def update_sprite_image(self):
+        if self.vectors[0] == 0:
+            if self.vectors[1] == 1:
+                self.sprite.image = goblin_image_back
+            else:
+                self.sprite.image = goblin_image_front
+
+        if self.vectors[0] == 1:
+            self.sprite.image = goblin_image_right
+
+        if self.vectors[0] == -1:
+            self.sprite.image = goblin_image_left
+        self.sprite.update()
 
     def draw_path(self):
         if self.path:

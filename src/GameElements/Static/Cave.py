@@ -61,8 +61,9 @@ class CaveClass(GameObject):
 
     def get_resources(self, member):
         for index, item in member.get_inventory_info()['items'].items():
-            self.inventory.add_items(item['object'], item['amount'])
-            member.remove_items(item['object'], item['amount'])
+            if item['object']:
+                self.inventory.add_items(item['object'], item['amount'])
+                member.remove_items(item['object'], item['amount'])
 
     def take_in(self, member):
         self.hide_member(member)
