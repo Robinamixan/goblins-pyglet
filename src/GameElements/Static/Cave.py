@@ -7,8 +7,8 @@ class CaveClass(GameObject):
     def __init__(self, game_controller, batch, name, point, size, image_path):
         super().__init__(game_controller, batch, name, point, size, image_path)
 
-        self.staff = StaffClass(4)
-        self.inventory = InventoryClass(10)
+        self.staff = StaffClass(10)
+        self.inventory = InventoryClass(20)
         self.around_points = self.get_around_points()
         self.targets = []
 
@@ -16,6 +16,21 @@ class CaveClass(GameObject):
         self.add_to_staff(gob)
 
         gob = self.game_controller.create_gob('test_2', point, add_to_cell=False)
+        self.add_to_staff(gob)
+
+        gob = self.game_controller.create_gob('test_3', point, add_to_cell=False)
+        self.add_to_staff(gob)
+
+        gob = self.game_controller.create_gob('test_4', point, add_to_cell=False)
+        self.add_to_staff(gob)
+
+        gob = self.game_controller.create_gob('test_5', point, add_to_cell=False)
+        self.add_to_staff(gob)
+
+        gob = self.game_controller.create_gob('test_6', point, add_to_cell=False)
+        self.add_to_staff(gob)
+
+        gob = self.game_controller.create_gob('test_7', point, add_to_cell=False)
         self.add_to_staff(gob)
 
     def add_to_staff(self, mob):
@@ -53,10 +68,9 @@ class CaveClass(GameObject):
         member.set_action('return')
 
     def gather_food(self, member):
-        food = self.game_controller.get_food_item(member.get_point(), excepts=self.targets)
+        food = self.game_controller.get_food_item(member.get_point(), excepts=self.get_targets())
         if food:
             point = food.get_point()
-            self.targets.append(point)
             member.set_target(point)
 
     def get_resources(self, member):
@@ -77,18 +91,17 @@ class CaveClass(GameObject):
         members = self.staff.get_all_outside()
         for member in members:
             if member.is_waiting():
-                self.check_target(member.get_point())
                 if member.get_point() in self.around_points:
                     self.take_in(member)
                     continue
-                if member.is_inventory_full():
+                if member.is_inventory_full() or member.get_wait_index() > 4:
                     self.go_back(member)
                     continue
 
                 self.gather_food(member)
 
     def manage_staff_inside(self):
-        food = self.game_controller.get_food_item(excepts=self.targets)
+        food = self.game_controller.get_food_item(excepts=self.get_targets())
         if food and not self.inventory.is_full():
             member = self.send_member()
             if member:
@@ -103,6 +116,15 @@ class CaveClass(GameObject):
     def check_target(self, point):
         if point in self.targets:
             self.targets.remove(point)
+
+    def get_targets(self):
+        members = self.staff.get_all_outside()
+        targets = []
+        for member in members:
+            if member.get_target():
+                targets.append(member.get_target())
+
+        return targets
 
     def get_inventory_info(self):
         return self.inventory.get_info()

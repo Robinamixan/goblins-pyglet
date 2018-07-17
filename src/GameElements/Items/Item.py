@@ -6,6 +6,7 @@ class ItemClass(GameObject):
         super().__init__(game_controller, batch, name, point, size, image_path)
 
         self.edible = False
+        self.passable = True
         self.satiety = 0
         self.stack = 4
 

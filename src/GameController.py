@@ -96,6 +96,10 @@ class GameController:
         for mob in self.mobs_group:
             mob.update(dt)
 
+    def update_mob_condition(self):
+        for mob in self.mobs_group:
+            mob.update_conditions()
+
     def draw_mobs(self):
         self.mobs_bath.draw()
 
@@ -107,8 +111,8 @@ class GameController:
 
         return gob
 
-    def create_path(self, start, end):
-        return self.path_creator.create_path(start, end)
+    def create_path(self, start, end, recreating=False):
+        return self.path_creator.create_path(start, end, recreating)
     # MOBS FUNCTIONS
 
     # STATIC OBJECTS FUNCTIONS

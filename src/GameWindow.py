@@ -117,6 +117,7 @@ class GameWindow(pyglet.window.Window):
         timer += 1
         self.game_controller.set_timer(timer)
         self.game_controller.update_static(dt)
+        self.game_controller.update_mob_condition()
 
     def run(self):
         pyglet.app.run()

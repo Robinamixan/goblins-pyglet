@@ -55,23 +55,34 @@ class MapClass:
 
     def create_map_from_file(self, file_name):
         file = open(file_name, 'r')
-        ind_y = 0
+        strings_map = [''] * self.map_size[1]
+        ind_y = self.map_size[1] - 1
         ind_x = 0
         for line in file:
-            for character in line:
-                if character == 'w':
-                    self.game_controller.create_wall((ind_x, ind_y))
-                if character == 't':
-                    self.game_controller.create_tree((ind_x, ind_y))
-                if character == 'c':
-                    self.game_controller.create_cave((ind_x, ind_y))
-
-                if character == '\n':
-                    ind_x = 0
-                else:
-                    ind_x += 1
-            ind_y += 1
+            strings_map[ind_y] = line
+            ind_y -= 1
         file.close()
+
+        for index_y, line in enumerate(strings_map):
+            for index_x, character in enumerate(line):
+                if character == '\n':
+                    continue
+                if character == 'w':
+                    self.game_controller.create_wall((index_x, index_y))
+                if character == 't':
+                    if self.map_has_full_object([index_x, index_y], [2, 2], character, strings_map):
+                        self.game_controller.create_tree((index_x, index_y))
+                if character == 'c':
+                    if self.map_has_full_object([index_x, index_y], [2, 2], character, strings_map):
+                        self.game_controller.create_cave((index_x, index_y))
+
+    def map_has_full_object(self, start_point, size, character, string_map):
+        for x in range(start_point[0], start_point[0] + size[0]):
+            for y in range(start_point[1], start_point[1] + size[1]):
+                if string_map[y][x] != character:
+                    return False
+
+        return True
 
     def get_cell(self, x, y):
         return self.cells[x][y]

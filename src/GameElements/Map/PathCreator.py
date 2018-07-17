@@ -44,12 +44,13 @@ class PathCreator:
     def create_text(self, list):
         return str(list[0]) + '_' + str(list[1])
 
-    def create_path(self, start, end):
+    def create_path(self, start, end, recreating=False):
         if end == start:
             return []
 
-        # including mobs in graph
-        self.update_nodes(self.map.cells)
+        if recreating:
+            # including mobs in graph
+            self.update_nodes(self.map.cells)
 
         if end not in self.all_nodes:
             return []
@@ -65,7 +66,8 @@ class PathCreator:
         return path
 
     def get_prev(self, node):
-        return self.came_from[self.create_text(node)]
+        if self.create_text(node) in self.came_from:
+            return self.came_from[self.create_text(node)]
 
     def update_nodes(self, cells):
         self.limit_max = [len(cells), len(cells[0])]
