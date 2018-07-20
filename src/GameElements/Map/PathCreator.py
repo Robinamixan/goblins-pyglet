@@ -82,11 +82,13 @@ class PathCreator:
         frontier.put(start)
         self.came_from = {}
         self.came_from[self.create_text(start)] = None
-        while not frontier.empty():
+        end_loop = False
+        while not frontier.empty() and not end_loop:
             current = frontier.get()
             for next in self.neighbors(current):
                 if self.create_text(next) not in self.came_from:
                     frontier.put(next)
                     self.came_from[self.create_text(next)] = current
                     if next == end:
+                        end_loop = True
                         break

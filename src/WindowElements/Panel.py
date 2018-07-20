@@ -106,6 +106,10 @@ class Panel:
         vector_str = '[' + str(int(vector[0])) + ', ' + str(int(vector[1])) + ']'
         self.set_label(vector_str, (90, 100))
 
+        waited = game_object.get_wait_index()
+        waited_str = '[' + str(int(waited)) + ']'
+        self.set_label(waited_str, (90, 120))
+
         self.set_inventory_block(game_object.get_inventory_info(), 10, 150)
 
     def set_building_labels(self, game_object):

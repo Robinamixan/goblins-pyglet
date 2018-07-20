@@ -3,7 +3,7 @@ from src.GameElements.Inventory.Staff import StaffClass
 from src.GameElements.Inventory.Inventory import InventoryClass
 
 
-class CaveClass(GameObject):
+class MainBuildingClass(GameObject):
     def __init__(self, game_controller, batch, name, point, size, image_path):
         super().__init__(game_controller, batch, name, point, size, image_path)
 
@@ -65,7 +65,6 @@ class CaveClass(GameObject):
     def go_back(self, member):
         point = [self.point[0] + 1, self.point[1] - 1]
         member.set_target(point)
-        member.set_action('return')
 
     def gather_food(self, member):
         food = self.game_controller.get_food_item(member.get_point(), excepts=self.get_targets())
@@ -101,8 +100,7 @@ class CaveClass(GameObject):
                 self.gather_food(member)
 
     def manage_staff_inside(self):
-        food = self.game_controller.get_food_item(excepts=self.get_targets())
-        if food and not self.inventory.is_full():
+        if self.check_food_on_map():
             member = self.send_member()
             if member:
                 self.gather_food(member)
@@ -116,6 +114,10 @@ class CaveClass(GameObject):
     def check_target(self, point):
         if point in self.targets:
             self.targets.remove(point)
+
+    def check_food_on_map(self):
+        food = self.game_controller.get_food_item(excepts=self.get_targets())
+        return food and not self.inventory.is_full() if True else False
 
     def get_targets(self):
         members = self.staff.get_all_outside()

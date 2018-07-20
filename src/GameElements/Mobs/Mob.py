@@ -16,7 +16,7 @@ class MobClass(GameObject):
         self.wait_index = 0
         self.wait_path_index = 0
         self.target = []
-        self.passable = True
+        self.passable = False
 
         self.speed = speed
         self.actions = {
@@ -91,6 +91,18 @@ class MobClass(GameObject):
         else:
             self.vectors[index] = 0
 
+    def update_action(self):
+        if self.get_action() == 'wait_clear':
+            if self.get_point() != self.get_destination():
+                if self.target:
+                    cell = self.game_controller.get_cell(self.target)
+                    if cell.is_empty():
+                        self.set_action('move')
+                    else:
+                        self.set_action('get')
+                        if self.destination == self.target:
+                            self.catch_item()
+
     def update_conditions(self):
         if self.get_action() == 'wait':
             self.wait_index += 1
@@ -122,6 +134,7 @@ class MobClass(GameObject):
             self.destination = next_step
             self.update_move(dt)
             self.update_sprite_image()
+            self.update_action()
         else:
             self.stop()
 

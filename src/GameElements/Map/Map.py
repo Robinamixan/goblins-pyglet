@@ -1,7 +1,7 @@
 from src.GameElements.Map.Cell import CellClass
 from src.GameElements.Static.Wall import WallClass
 from src.GameElements.Static.Tree import TreeClass
-from src.GameElements.Static.Cave import CaveClass
+from src.GameElements.Static.MainBuilding import MainBuildingClass
 from src.Constants import *
 from pyglet.gl import gl
 import pyglet
@@ -42,7 +42,7 @@ class MapClass:
         return TreeClass(self.game_controller, self.trees_batch, 'tree_' + str(point[0]) + '_' + str(point[1]), point, (2, 2), tree_image)
 
     def create_cave(self, point):
-        return CaveClass(self.game_controller, self.buildings_batch, 'cave_' + str(point[0]) + '_' + str(point[1]), point, (2, 2), cave_image)
+        return MainBuildingClass(self.game_controller, self.buildings_batch, 'cave_' + str(point[0]) + '_' + str(point[1]), point, (2, 2), cave_image)
 
     def is_wall(self, game_object):
         return isinstance(game_object, WallClass)
@@ -51,7 +51,7 @@ class MapClass:
         return isinstance(game_object, TreeClass)
 
     def is_cave(self, game_object):
-        return isinstance(game_object, CaveClass)
+        return isinstance(game_object, MainBuildingClass)
 
     def create_map_from_file(self, file_name):
         file = open(file_name, 'r')

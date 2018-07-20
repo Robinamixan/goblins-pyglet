@@ -29,8 +29,14 @@ class InventoryClass:
                 return True
             elif cell['object'].name == item.name:
                 if item.stack is not None and cell['amount'] < item.stack:
-                    cell['amount'] += amount
-                    return True
+                    if cell['amount'] + amount <= item.stack:
+                        cell['amount'] += amount
+                        return True
+                    else:
+                        differ = (cell['amount'] + amount) - item.stack
+                        cell['amount'] = item.stack
+                        if self.add_items(item, differ):
+                            return True
 
         return False
 
